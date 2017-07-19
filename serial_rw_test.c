@@ -194,6 +194,8 @@ void getcardinfo(char *buff, int len){
          // exit (0);
 }
 
+
+//test
 int main(int argc, char const *argv[]) {
 
     //int i = 0;
