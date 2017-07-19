@@ -56,6 +56,8 @@ int set_Parity(int fd,int databits,int stopbits,int parity)
          options.c_lflag  &= ~(ICANON | ECHO | ECHOE | ISIG);  /*Input*///设置为普通模式，当串口作为中断时，设置为标准模式
          options.c_oflag  &= ~OPOST;   /*Output*/
 
+         //options.c_iflag &= ~ (IXON | IXOFF | IXANY);//自己加的，屏蔽软件流控
+
          switch (databits) /*设置数据位数*/
          {
          case 7:
@@ -112,7 +114,7 @@ int set_Parity(int fd,int databits,int stopbits,int parity)
                  options.c_iflag |= INPCK;
         tcflush(fd,TCIFLUSH);
         options.c_cc[VTIME] = 0; /* 设置超时15 seconds*/
-        options.c_cc[VMIN] = 13; /* define the minimum bytes data to be readed*/
+        options.c_cc[VMIN] = 1;//13; /* define the minimum bytes data to be readed*/
                                   //改为1数据出问题，不连续
         if (tcsetattr(fd,TCSANOW,&options) != 0)
         {
@@ -129,7 +131,7 @@ int set_Parity(int fd,int databits,int stopbits,int parity)
 /*********************************************************************/
 int OpenDev(char *Dev)
 {
-         int     fd = open( Dev, O_RDWR | O_NOCTTY); // | O_NDELAY);
+         int     fd = open( Dev, O_RDWR | O_NOCTTY | O_NDELAY);
          if (-1 == fd)
          {
                    perror("Can't Open Serial Port");
@@ -197,8 +199,8 @@ int main(int argc, char const *argv[]) {
     //int i = 0;
     char buf[1029] = {0};
     getcardinfo(buf, 133);
-
-    //getcardinfo(buf, 133);
+    getcardinfo(buf, 100);
+    getcardinfo(buf, 133);
 
     return 0;
 }
