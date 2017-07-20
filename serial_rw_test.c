@@ -15,21 +15,21 @@
 *@param  speed  类型 int  串口速度
 *@return  void
 */
-int speed_arr[] = { B38400, B19200, B9600, B4800, B2400, B1200, B300,
-                   B38400, B19200, B9600, B4800, B2400, B1200, B300, };
-int name_arr[] = {38400,  19200,  9600,  4800,  2400,  1200,  300, 38400,
-                            19200,  9600, 4800, 2400, 1200,  300, };
+int speed_arr[] = { B115200, B38400, B19200, B9600, B4800, B2400, B1200, B300,
+                    B115200, B38400, B19200, B9600, B4800, B2400, B1200, B300, };
+int name_arr[] = {115200, 38400,  19200,   9600,  4800,  2400,  1200,  300,
+                  115200, 38400,  19200,   9600,  4800,  2400,  1200,  300, };
 void set_speed(int fd, int speed){
          int   i;
          int   status;
          struct termios   Opt;
-         tcgetattr(fd, &Opt);
+         tcgetattr(fd, &Opt);  //得到设备对应的termios，保存到opt
          for ( i= 0;  i < sizeof(speed_arr) / sizeof(int);  i++) {
                    if  (speed == name_arr[i]) {
                             tcflush(fd, TCIOFLUSH);
-                            cfsetispeed(&Opt, speed_arr[i]);
+                            cfsetispeed(&Opt, speed_arr[i]);  //改变opt中表示输入速度元素的值
                             cfsetospeed(&Opt, speed_arr[i]);
-                            status = tcsetattr(fd, TCSANOW, &Opt);
+                            status = tcsetattr(fd, TCSANOW, &Opt);  //根据opt设置设备termios值
                             if  (status != 0) {
                                      perror("tcsetattr fd");
                                      return;
@@ -115,7 +115,7 @@ int set_Parity(int fd,int databits,int stopbits,int parity)
         tcflush(fd,TCIFLUSH);
         options.c_cc[VTIME] = 0; /* 设置超时15 seconds*/
         options.c_cc[VMIN] = 1;//13; /* define the minimum bytes data to be readed*/
-                                  //改为1数据出问题，不连续
+
         if (tcsetattr(fd,TCSANOW,&options) != 0)
         {
                  perror("SetupSerial 3");
@@ -148,7 +148,7 @@ void getcardinfo(char *buff, int len){
          //char tempbuff[13];
          char *dev  = "/dev/ttyPS0"; //串口1
          fd = OpenDev(dev);
-         set_speed(fd, 9600);  //设置为115200有问题，不设置也有问题
+         set_speed(fd, 115200);  //设置为115200有问题，不设置也有问题
          if (set_Parity(fd,8,1,'N') == FALSE)  {
                    printf("Set Parity Error/n");
                    //return -1;
